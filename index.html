@@ -1,84 +1,123 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MCCLIB</title>
+    <title>MCCLIB Python - Создавайте команды легко и быстро!</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             line-height: 1.6;
-            margin: 0;
-            padding: 0;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
             background-color: #f4f4f4;
-            overflow-x: hidden;
         }
         header {
-            background: #35424a;
-            color: #ffffff;
-            padding: 20px 0;
+            background-color: #15d798;
+            color: white;
             text-align: center;
+            padding: 1em;
+            border-radius: 5px;
         }
-        h1 {
+        header h1, header p {
+            color: white;
             margin: 0;
         }
-        section {
+        header h1 {
+            margin-bottom: 0.5em;
+        }
+        h1, h2 {
+            color: #15d798;
+        }
+        .section {
+            background-color: white;
             padding: 20px;
-            margin: 20px;
-            background: #ffffff;
+            margin-top: 20px;
             border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        code {
+            background-color: #f1f1f1;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+        .button {
+            display: inline-block;
+            background-color: #15d798;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .button:hover {
+            background-color: #12b580;
         }
         footer {
+            margin-top: 20px;
             text-align: center;
-            padding: 10px;
-            background: #35424a;
-            color: #ffffff;
-            position: relative;
-            bottom: 0;
-            width: 100%;
-        }
-        a {
-            color: white;
+            font-size: 0.9em;
+            color: #666;
         }
     </style>
 </head>
 <body>
+    <header>
+        <h1>MCCLIB Python</h1>
+        <p>Создавайте команды легко и быстро!</p>
+    </header>
 
-<header>
-    <h1>MCCLIB Python</h1>
-    <p>Создавайте команды легко и быстро!</p>
-</header>
+    <div class="section">
+        <h2>О проекте</h2>
+        <p>MCCLIB - это мощный инструмент для разработки генераторов команд в Minecraft. Наш проект предоставляет следующие возможности:</p>
+        <ul>
+            <li>Интеграция генератора в Python программы</li>
+            <li>Быстрое создание датапаков</li>
+            <li>Возможность добавлять пользовательский интерфейс для более удобной генерации</li>
+        </ul>
+    </div>
 
-<section>
-    <h2>О проекте</h2>
-    <p>Этот проект представляет собой инструмент для разработки своих генераторов команд, он имеет возможности:</p>
-    <ul>
-        <li>Интеграция генератора в Python программы</li>
-        <li>Быстрое создание датапаков</li>
-        <li>Возможность добавлять интерфейс для более удобной генерации</li>
-        
-    </ul>
+    <div class="section">
+        <h2>Как использовать</h2>
+        <p>MCCLIB предоставляет широкие возможности для разработки собственных генераторов на основе нашей библиотеки. Вот простой пример использования:</p>
+        <pre><code>
+from minecraft_commands import MinecraftCommand
 
-    <h2>Как использовать</h2>
-    <p>этот проект подрузомивает возможности для разработки своих генераторов на основе библиотеки .</p>
+mc_cmd = MinecraftCommand()
+mc_cmd.set_block(10, 64, 10, "minecraft:diamond_block")
+mc_cmd.teleport("Steve", 100, 64, 100)
+mc_cmd.give_item("Alex", "minecraft:diamond_sword", 1)
+mc_cmd.summon_entity("minecraft:zombie", 105, 64, 105)
+mc_cmd.effect("Steve", "speed", 30, 2)
+mc_cmd.clear_effect("Steve")
 
-    <h2>Установка</h2>
-    <p>Для использования проекта, просто клонируйте репозиторий:</p>
-    <pre><code>git clone https://github.com/mrforgEstudios/MCCLIB.git</code></pre>
-    <p>Или по кнопке ниже</p>
-    <a href="https://drive.google.com/uc?export=download&id=11qbVfVxgN69wpkTAM54HsFUxs9zcmC6X">
-        <img src="https://dabuttonfactory.com/button.png?t=Download&f=Open+Sans-Bold&ts=26&tc=fff&hp=45&vp=20&c=50&bgt=unicolored&bgc=15d798">
-    </a>
-    <h2>Вклад</h2>
-    <p>Вы можете помочь улучшить проект, открыв issue или отправив pull request. Мы приветствуем ваш вклад!</p>
-</section>
+print(mc_cmd.execute())
+        </code></pre>
+    </div>
 
-<footer>
-    <p>© 2024 MCCLIB. Все права защищены.</p>
-    <p><a href="https://github.com/mrforgEstudios/MCCLIB" style="">Посетите наш GitHub ₪</a></p>
-</footer>
+    <div class="section">
+        <h2>Установка</h2>
+        <p>Для использования проекта, просто клонируйте репозиторий:</p>
+        <pre><code>git clone https://github.com/mrforgEstudios/MCCLIB.git</code></pre>
+        <p>Или воспользуйтесь кнопкой ниже для прямой загрузки:</p>
+        <a href="https://drive.google.com/uc?export=download&id=11qbVfVxgN69wpkTAM54HsFUxs9zcmC6X" class="button">Скачать MCCLIB</a>
+    </div>
 
+    <div class="section">
+        <h2>Вклад в проект</h2>
+        <p>Мы приветствуем ваш вклад в развитие MCCLIB! Вы можете помочь улучшить проект следующими способами:</p>
+        <ul>
+            <li>Открыть issue с описанием проблемы или предложением улучшения</li>
+            <li>Отправить pull request с вашими изменениями</li>
+            <li>Поделиться проектом с другими разработчиками Minecraft</li>
+        </ul>
+    </div>
+
+    <footer>
+        <p>© 2024 MCCLIB. Все права защищены.</p>
+        <a href="https://github.com/mrforgEstudios/MCCLIB" class="button">Посетите наш GitHub</a>
+    </footer>
 </body>
 </html>
