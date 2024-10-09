@@ -6,17 +6,22 @@ from minecraft_commands import MinecraftCommand
 pygame.init()
 
 # Задаем размеры окна
-screen = pygame.display.set_mode((800, 600))
+SCREEN_WIDTH, SCREEN_HEIGHT = 1024, 768
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Minecraft Command Generator")
 
 # Цвета
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 GRAY = (200, 200, 200)
-BLUE = (0, 102, 204)
+LIGHT_BLUE = (173, 216, 230)
+DARK_BLUE = (0, 102, 204)
+GREEN = (0, 255, 0)
 
 # Шрифты
-FONT = pygame.freetype.SysFont("Arial", 24)
+FONT_LARGE = pygame.freetype.SysFont("Arial", 32)
+FONT_MEDIUM = pygame.freetype.SysFont("Arial", 24)
+FONT_SMALL = pygame.freetype.SysFont("Arial", 18)
 
 # Инициализация командного генератора
 mc_cmd = MinecraftCommand()
@@ -32,15 +37,18 @@ active_input = None
 generated_commands = ""
 
 # Интерфейсные элементы
+def create_button(text, x, y, width, height):
+    return {"rect": pygame.Rect(x, y, width, height), "text": text, "color": LIGHT_BLUE}
+
 buttons = {
-    "Set Block": pygame.Rect(50, 50, 200, 50),
-    "Teleport": pygame.Rect(50, 110, 200, 50),
-    "Give Item": pygame.Rect(50, 170, 200, 50),
-    "Summon Entity": pygame.Rect(50, 230, 200, 50),
-    "Effect": pygame.Rect(50, 290, 200, 50),
-    "Clear Effect": pygame.Rect(50, 350, 200, 50),
-    "Generate": pygame.Rect(300, 450, 200, 50),
-    "Back": pygame.Rect(50, 500, 100, 50)  # Добавляем кнопку "Назад"
+    "Set Block": create_button("Set Block", 50, 100, 200, 60),
+    "Teleport": create_button("Teleport", 270, 100, 200, 60),
+    "Give Item": create_button("Give Item", 490, 100, 200, 60),
+    "Summon Entity": create_button("Summon Entity", 50, 180, 200, 60),
+    "Effect": create_button("Effect", 270, 180, 200, 60),
+    "Clear Effect": create_button("Clear Effect", 490, 180, 200, 60),
+    "Generate": create_button("Generate", SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT - 100, 200, 60),
+    "Back": create_button("Back", 50, SCREEN_HEIGHT - 100, 150, 60)
 }
 
 # Поля ввода по режимам
@@ -54,40 +62,47 @@ modes = {
 }
 
 # Функция отображения текста
-def draw_text(surface, text, pos, color=BLACK):
-    FONT.render_to(surface, pos, text, color)
+def draw_text(surface, text, pos, font=FONT_MEDIUM, color=BLACK):
+    font.render_to(surface, pos, text, color)
+
+# Функция отрисовки кнопки
+def draw_button(surface, button, mouse_pos):
+    color = GREEN if button["rect"].collidepoint(mouse_pos) else button["color"]
+    pygame.draw.rect(surface, color, button["rect"], border_radius=10)
+    pygame.draw.rect(surface, BLACK, button["rect"], 2, border_radius=10)
+    text_rect = FONT_MEDIUM.get_rect(button["text"])
+    pos = button["rect"].centerx - text_rect.width // 2, button["rect"].centery - text_rect.height // 2
+    draw_text(surface, button["text"], pos)
 
 # Функция отрисовки меню выбора режима
-def draw_menu():
+def draw_menu(mouse_pos):
     screen.fill(WHITE)
-    draw_text(screen, "Choose a mode:", (300, 20))
-    for text, rect in buttons.items():
-        if text != "Generate" and text != "Back":  # Исключаем кнопки не из меню
-            pygame.draw.rect(screen, GRAY, rect)
-            draw_text(screen, text, (rect.x + 10, rect.y + 10))
+    draw_text(screen, "Minecraft Command Generator", (SCREEN_WIDTH // 2 - 200, 30), FONT_LARGE, DARK_BLUE)
+    draw_text(screen, "Choose a mode:", (SCREEN_WIDTH // 2 - 70, 70))
+    for button in buttons.values():
+        if button["text"] not in ["Generate", "Back"]:
+            draw_button(screen, button, mouse_pos)
 
 # Функция отрисовки интерфейса для выбранного режима
-def draw_mode_interface():
+def draw_mode_interface(mouse_pos):
     screen.fill(WHITE)
-    draw_text(screen, f"Mode: {current_mode}", (50, 20))
+    draw_text(screen, f"Mode: {current_mode}", (50, 30), FONT_LARGE, DARK_BLUE)
 
     # Отображение полей ввода для текущего режима
     for i, field in enumerate(input_fields):
-        pygame.draw.rect(screen, WHITE, pygame.Rect(200, 70 + i * 50, 250, 30))  # Заливка белого фона
-        pygame.draw.rect(screen, BLACK, pygame.Rect(200, 70 + i * 50, 250, 30), 2)  # Черная обводка
-        draw_text(screen, f"{field.capitalize()}:", (50, 70 + i * 50))
-        draw_text(screen, input_fields[field], (210, 75 + i * 50), BLUE)
+        pygame.draw.rect(screen, WHITE, pygame.Rect(250, 100 + i * 60, 300, 40))
+        pygame.draw.rect(screen, BLACK, pygame.Rect(250, 100 + i * 60, 300, 40), 2)
+        draw_text(screen, f"{field.capitalize()}:", (50, 105 + i * 60), FONT_MEDIUM)
+        draw_text(screen, input_fields[field], (260, 105 + i * 60), FONT_MEDIUM, DARK_BLUE)
 
-    # Кнопка генерации и кнопка "Назад"
-    pygame.draw.rect(screen, GRAY, buttons["Generate"])
-    draw_text(screen, "Generate", (buttons["Generate"].x + 10, buttons["Generate"].y + 10))
-    
-    pygame.draw.rect(screen, GRAY, buttons["Back"])  # Кнопка "Назад"
-    draw_text(screen, "Back", (buttons["Back"].x + 10, buttons["Back"].y + 10))
+    # Кнопки "Generate" и "Back"
+    draw_button(screen, buttons["Generate"], mouse_pos)
+    draw_button(screen, buttons["Back"], mouse_pos)
 
     # Отображение сгенерированных команд
-    draw_text(screen, "Generated Command:", (150, 520))
-    draw_text(screen, generated_commands, (150, 550), BLUE)
+    pygame.draw.rect(screen, LIGHT_BLUE, (50, SCREEN_HEIGHT - 200, SCREEN_WIDTH - 100, 80), border_radius=10)
+    draw_text(screen, "Generated Command:", (60, SCREEN_HEIGHT - 190), FONT_SMALL)
+    draw_text(screen, generated_commands, (60, SCREEN_HEIGHT - 160), FONT_MEDIUM, DARK_BLUE)
 
 # Функция обработки выбора режима
 def select_mode(mode):
@@ -98,6 +113,8 @@ def select_mode(mode):
 # Основной цикл программы
 running = True
 while running:
+    mouse_pos = pygame.mouse.get_pos()
+    
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -105,12 +122,12 @@ while running:
         if event.type == pygame.MOUSEBUTTONDOWN:
             if current_mode is None:
                 # Проверка нажатия на кнопки в меню
-                for mode in modes:
-                    if buttons[mode].collidepoint(event.pos):
+                for mode, button in buttons.items():
+                    if button["rect"].collidepoint(event.pos) and mode in modes:
                         select_mode(mode)
             else:
                 # Проверка нажатия на кнопки и поля ввода в режиме генерации
-                if buttons["Generate"].collidepoint(event.pos):
+                if buttons["Generate"]["rect"].collidepoint(event.pos):
                     if current_mode == "Set Block":
                         mc_cmd.set_block(int(input_fields["x"]), int(input_fields["y"]), int(input_fields["z"]), input_fields["block"])
                     elif current_mode == "Teleport":
@@ -127,12 +144,12 @@ while running:
                     generated_commands = mc_cmd.execute()
 
                 # Проверка нажатия на кнопку "Назад"
-                if buttons["Back"].collidepoint(event.pos):
-                    current_mode = None  # Возвращаемся в меню
+                if buttons["Back"]["rect"].collidepoint(event.pos):
+                    current_mode = None
 
                 # Проверка нажатия на поля ввода
                 for i, field in enumerate(input_fields):
-                    if 200 <= event.pos[0] <= 450 and 70 + i * 50 <= event.pos[1] <= 100 + i * 50:
+                    if 250 <= event.pos[0] <= 550 and 100 + i * 60 <= event.pos[1] <= 140 + i * 60:
                         active_input = field
 
         if event.type == pygame.KEYDOWN and active_input:
@@ -143,9 +160,9 @@ while running:
 
     # Отрисовка интерфейса
     if current_mode is None:
-        draw_menu()
+        draw_menu(mouse_pos)
     else:
-        draw_mode_interface()
+        draw_mode_interface(mouse_pos)
 
     # Обновление экрана
     pygame.display.flip()
